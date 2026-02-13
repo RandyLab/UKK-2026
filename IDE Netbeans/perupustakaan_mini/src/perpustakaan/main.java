@@ -65,7 +65,7 @@ public class main extends javax.swing.JFrame {
                 }
             }
             if(!ditemukan){
-                fieldJudul.setText("Buku Tidak Ditemukan");
+                fieldJudul.setText("");
                 fieldPenerbit.setText("");
                 fieldTahunTerbit.setText("");
                 updateCover("");
@@ -140,6 +140,14 @@ public class main extends javax.swing.JFrame {
     fieldJumlah.setText(String.valueOf(tempPilihBuku.size()));
 }
     
+    private void resetFBuku(){
+        fieldISBN.setText("");
+        fieldJudul.setText("");
+        fieldPenerbit.setText("");
+        fieldTahunTerbit.setText("");
+        updateCover("");
+    }
+    
     Object[] data_buku ={
     new Object[] {1234, "Fumetsu no Anata", "Stone", "2006-10-13", "src/perpustakaan/covers/fumetsu.jpg"},
     new Object[] {1235, "I AM! I AM!", "PEAK", "2007-10-13", "src/perpustakaan/covers/AM.jpg"},
@@ -161,6 +169,8 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
     public main() {
         initComponents();
         loadTable();
+        
+        fieldKodePinjam.requestFocus();
         
         fieldISBN.getDocument().addDocumentListener(new DocumentListener(){
             public void insertUpdate(DocumentEvent e) { updateBuku(); }
@@ -196,18 +206,18 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
         iconCover = new javax.swing.JLabel();
         pilihBukuButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        datePinjam = new com.toedter.calendar.JDateChooser();
         fieldNamaAnggota = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         fieldJumlah = new javax.swing.JTextField();
         pinjamButton = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
+        datePinjam = new com.toedter.calendar.JDateChooser();
         panelPengembalian = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         kembalikanButton = new javax.swing.JButton();
-        dateKembalikan = new com.toedter.calendar.JDateChooser();
         jLabel14 = new javax.swing.JLabel();
+        dateKembalikan = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         transaksiTable = new javax.swing.JTable();
         keluarTombol = new javax.swing.JButton();
@@ -298,7 +308,12 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
         jLabel3.setForeground(new java.awt.Color(51, 51, 51));
         jLabel3.setText("Tanggal Pinjam");
         panelPilihBuku.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 48, -1, -1));
-        panelPilihBuku.add(datePinjam, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 48, 165, -1));
+
+        fieldNamaAnggota.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fieldNamaAnggotaActionPerformed(evt);
+            }
+        });
         panelPilihBuku.add(fieldNamaAnggota, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 75, 165, -1));
 
         jLabel4.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
@@ -328,6 +343,13 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
         jLabel12.setForeground(new java.awt.Color(51, 51, 51));
         jLabel12.setText("Pilih Buku");
         panelPilihBuku.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 173, 90, -1));
+
+        datePinjam.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentAdded(java.awt.event.ContainerEvent evt) {
+                datePinjamComponentAdded(evt);
+            }
+        });
+        panelPilihBuku.add(datePinjam, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 50, 160, -1));
 
         jPanel1.add(panelPilihBuku, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 105, 300, 519));
 
@@ -363,12 +385,12 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(kembalikanButton))
                     .addGroup(panelPengembalianLayout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(dateKembalikan, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE))
-                    .addGroup(panelPengembalianLayout.createSequentialGroup()
                         .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(panelPengembalianLayout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addGap(18, 18, 18)
+                        .addComponent(dateKembalikan, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelPengembalianLayout.setVerticalGroup(
@@ -377,9 +399,9 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
                 .addContainerGap()
                 .addComponent(jLabel14)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelPengembalianLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel13)
-                    .addComponent(dateKembalikan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panelPengembalianLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(dateKembalikan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(kembalikanButton)
                 .addGap(23, 23, 23))
@@ -480,6 +502,7 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
         } else {
             JOptionPane.showMessageDialog(this, "Kode Pinjam TERSEDIA!", 
                 "Hasil Cek", JOptionPane.INFORMATION_MESSAGE);
+            datePinjam.requestFocus();
         }
         
     } catch(NumberFormatException e) {
@@ -491,16 +514,16 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
 
     private void pilihBukuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pilihBukuButtonActionPerformed
 if(!statusMeminjam) {
-    JOptionPane.showMessageDialog(this, "Tekan tombol Pinjam terlebih dahulu!", 
+    JOptionPane.showMessageDialog(this, "Isi data pinjam dulu!", 
         "Peringatan", JOptionPane.WARNING_MESSAGE);
-    updateBuku();
+    resetFBuku();
     return;
 }
 
 if(counterInputBuku >= jumlahBukuPinjam) {
     JOptionPane.showMessageDialog(this, "Semua buku sudah diinput!", 
         "Informasi", JOptionPane.INFORMATION_MESSAGE);
-    updateBuku();
+    resetFBuku();
     return;
 }
 
@@ -508,7 +531,7 @@ String isbnStr = fieldISBN.getText().trim();
 if(isbnStr.isEmpty()) {
     JOptionPane.showMessageDialog(this, "ISBN tidak boleh kosong!", 
         "Peringatan", JOptionPane.WARNING_MESSAGE);
-    updateBuku();
+    resetFBuku();
     return;
 }
 
@@ -534,7 +557,7 @@ try {
             
             counterInputBuku++;
             ditemukan = true;
-            updateBuku();
+            resetFBuku();
             JOptionPane.showMessageDialog(this, 
                 "Buku ke-" + counterInputBuku + " ditambahkan!\n" +
                 "Sisa input: " + (jumlahBukuPinjam - counterInputBuku),
@@ -542,7 +565,7 @@ try {
             
             if(counterInputBuku == jumlahBukuPinjam) {
                 simpanTransaksi();
-                updateBuku();
+                resetFBuku();
             }
             
             fieldISBN.setText("");
@@ -560,7 +583,7 @@ try {
     JOptionPane.showMessageDialog(this, "ISBN harus angka!", 
         "Error", JOptionPane.ERROR_MESSAGE);
 }
-updateBuku();
+resetFBuku();
     }//GEN-LAST:event_pilihBukuButtonActionPerformed
 
     private void pinjamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pinjamButtonActionPerformed
@@ -628,6 +651,7 @@ updateBuku();
         JOptionPane.showMessageDialog(this, 
             "Masukkan " + jumlahBukuPinjam + " buku satu per satu melalui tombol 'Pilih Buku'",
             "Informasi", JOptionPane.INFORMATION_MESSAGE);
+        fieldISBN.requestFocus();
         
     } catch(NumberFormatException e) {
         JOptionPane.showMessageDialog(this, "Kode Pinjam dan Jumlah buku harus angka!", 
@@ -744,6 +768,16 @@ try {
             System.exit(0);
         }
     }//GEN-LAST:event_keluarTombolActionPerformed
+
+    private void fieldNamaAnggotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldNamaAnggotaActionPerformed
+        // TODO add your handling code here:
+        fieldJumlah.requestFocus();
+    }//GEN-LAST:event_fieldNamaAnggotaActionPerformed
+
+    private void datePinjamComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_datePinjamComponentAdded
+        // TODO add your handling code here:
+        fieldNamaAnggota.requestFocus();
+    }//GEN-LAST:event_datePinjamComponentAdded
 
     /**
      * @param args the command line arguments
