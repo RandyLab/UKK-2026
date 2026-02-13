@@ -49,29 +49,31 @@ public class main extends javax.swing.JFrame {
 }
     
     private void updateBuku(){
-        try {
-            int kodeISBN = Integer.parseInt(fieldISBN.getText());
-            boolean ditemukan = false;
-            for(Object obj : data_buku){
-                Object[] dataBuku = (Object[]) obj;
-                int ISBN = (int) dataBuku[0];
-                if(kodeISBN == ISBN){
-                    fieldJudul.setText((String) dataBuku[1]);
-                    fieldPenerbit.setText((String) dataBuku[2]);
-                    fieldTahunTerbit.setText((String) dataBuku[3]);                                                                                                                                  
-                    updateCover((String) dataBuku[4]);
-                    ditemukan = true;
-                    break;
-                }
-            }
-            if(!ditemukan){
-                fieldJudul.setText("");
-                fieldPenerbit.setText("");
-                fieldTahunTerbit.setText("");
-                updateCover("");
-            }
-        } catch(NumberFormatException e) {}
+    String kodeISBN = fieldISBN.getText().trim();
+    boolean ditemukan = false;
+
+    for(Object obj : data_buku){
+        Object[] dataBuku = (Object[]) obj;
+        String ISBN = (String) dataBuku[0];
+
+        if(kodeISBN.equals(ISBN)){
+            fieldJudul.setText((String) dataBuku[1]);
+            fieldPenerbit.setText((String) dataBuku[2]);
+            fieldTahunTerbit.setText((String) dataBuku[3]);
+            updateCover((String) dataBuku[4]);
+            ditemukan = true;
+            break;
+        }
     }
+
+    if(!ditemukan){
+        fieldJudul.setText("");
+        fieldPenerbit.setText("");
+        fieldTahunTerbit.setText("");
+        updateCover("");
+    }
+}
+
     
     private void loadTable(){
         DefaultTableModel model = (DefaultTableModel) transaksiTable.getModel();
@@ -149,9 +151,13 @@ public class main extends javax.swing.JFrame {
     }
     
     Object[] data_buku ={
-    new Object[] {1234, "Fumetsu no Anata", "Stone", "2006-10-13", "src/perpustakaan/covers/fumetsu.jpg"},
-    new Object[] {1235, "I AM! I AM!", "PEAK", "2007-10-13", "src/perpustakaan/covers/AM.jpg"},
-    new Object[] {1236, "Death Note", "Elitis", "2008-10-13", "src/perpustakaan/covers/death_note.jpg"},
+    new Object[] {"9786231809223", "PKK Kelas 12", "Stone", "2006-10-13", "src/perpustakaan/covers/pkk.jpg"},
+    new Object[] {"9786022446576", "PPKN", "PEAK", "2007-10-13", "src/perpustakaan/covers/pkn.jpg"},
+    new Object[] {"6941798464992", "Buku Catatan", "Elitis", "2008-10-13", "src/perpustakaan/covers/buku_catatan.jpg"},
+    new Object[] {"208386213", "Buku Tulis Samuel", "Elitis", "2008-10-13", "src/perpustakaan/covers/buku_tulis.jpg"},
+    new Object[] {"9786029053265", "MPR", "Elitis", "2008-10-13", "src/perpustakaan/covers/mpr.jpg"},
+    new Object[] {"9786025305740", "Filsafat Dalam Berbagai Perspektif", "Elitis", "2008-10-13", "src/perpustakaan/covers/filsafat.jpg"},
+    new Object[] {"9786232422971", "Realm Breaker", "Elitis", "2008-10-13", "src/perpustakaan/covers/realm_breaker.jpg"},
 };
 
 Object[] transaksi ={
@@ -428,7 +434,7 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
         });
         jScrollPane1.setViewportView(transaksiTable);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(367, 67, 390, 390));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(367, 67, 390, 130));
 
         keluarTombol.setBackground(new java.awt.Color(255, 102, 102));
         keluarTombol.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -513,77 +519,50 @@ private java.util.ArrayList<Object[]> tempPilihBuku = new java.util.ArrayList<>(
     }//GEN-LAST:event_cekKodeButtonActionPerformed
 
     private void pilihBukuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pilihBukuButtonActionPerformed
-if(!statusMeminjam) {
-    JOptionPane.showMessageDialog(this, "Isi data pinjam dulu!", 
-        "Peringatan", JOptionPane.WARNING_MESSAGE);
-    resetFBuku();
-    return;
-}
 
-if(counterInputBuku >= jumlahBukuPinjam) {
-    JOptionPane.showMessageDialog(this, "Semua buku sudah diinput!", 
-        "Informasi", JOptionPane.INFORMATION_MESSAGE);
-    resetFBuku();
-    return;
-}
+        String isbn = fieldISBN.getText().trim();
+        boolean ditemukan = false;
 
-String isbnStr = fieldISBN.getText().trim();
-if(isbnStr.isEmpty()) {
-    JOptionPane.showMessageDialog(this, "ISBN tidak boleh kosong!", 
-        "Peringatan", JOptionPane.WARNING_MESSAGE);
-    resetFBuku();
-    return;
-}
+        for(Object obj : data_buku) {
+            Object[] dataBuku = (Object[]) obj;
+            String ISBN = (String) dataBuku[0];
 
-try {
-    int isbn = Integer.parseInt(isbnStr);
-    boolean ditemukan = false;
-    
-    for(Object obj : data_buku) {
-        Object[] dataBuku = (Object[]) obj;
-        int ISBN = (int) dataBuku[0];
-        
-        if(isbn == ISBN) {
-            if(counterInputBuku == 0) {
-                transaksiSementara[3] = ISBN;
-            } else {
-                transaksiSementara[4] = ISBN;
-            }
-            
-            fieldJudul.setText((String) dataBuku[1]);
-            fieldPenerbit.setText((String) dataBuku[2]);
-            fieldTahunTerbit.setText((String) dataBuku[3]);
-            updateCover((String) dataBuku[4]);
-            
-            counterInputBuku++;
-            ditemukan = true;
-            resetFBuku();
-            JOptionPane.showMessageDialog(this, 
-                "Buku ke-" + counterInputBuku + " ditambahkan!\n" +
-                "Sisa input: " + (jumlahBukuPinjam - counterInputBuku),
-                "Sukses", JOptionPane.INFORMATION_MESSAGE);
-            
-            if(counterInputBuku == jumlahBukuPinjam) {
-                simpanTransaksi();
+            if(isbn.equals(ISBN)) {
+
+                if(counterInputBuku == 0) {
+                    transaksiSementara[3] = ISBN;
+                } else {
+                    transaksiSementara[4] = ISBN;
+                }
+
+                fieldJudul.setText((String) dataBuku[1]);
+                fieldPenerbit.setText((String) dataBuku[2]);
+                fieldTahunTerbit.setText((String) dataBuku[3]);
+                updateCover((String) dataBuku[4]);
+
+                counterInputBuku++;
+                ditemukan = true;
+
+                JOptionPane.showMessageDialog(this, 
+                    "Buku ke-" + counterInputBuku + " ditambahkan!\n" +
+                    "Sisa input: " + (jumlahBukuPinjam - counterInputBuku),
+                    "Sukses", JOptionPane.INFORMATION_MESSAGE);
                 resetFBuku();
+                if(counterInputBuku == jumlahBukuPinjam) {
+                    simpanTransaksi();
+                }
+
+                break;
             }
-            
-            fieldISBN.setText("");
-            
-            break;
         }
-    }
-    
-    if(!ditemukan) {
-        JOptionPane.showMessageDialog(this, "Buku dengan ISBN " + isbn + " tidak ditemukan!", 
-            "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    
-} catch(NumberFormatException e) {
-    JOptionPane.showMessageDialog(this, "ISBN harus angka!", 
-        "Error", JOptionPane.ERROR_MESSAGE);
-}
-resetFBuku();
+
+        if(!ditemukan) {
+            JOptionPane.showMessageDialog(this, 
+                "Buku dengan ISBN " + isbn + " tidak ditemukan!", 
+                "Error", JOptionPane.ERROR_MESSAGE);
+            resetFBuku();
+        }
+
     }//GEN-LAST:event_pilihBukuButtonActionPerformed
 
     private void pinjamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pinjamButtonActionPerformed
@@ -635,11 +614,12 @@ resetFBuku();
         counterInputBuku = 0;
         
         transaksiSementara = new Object[]{
-            kodePinjam,
-            new SimpleDateFormat("yyyy-MM-dd").format(tanggalPinjam),
-            fieldNamaAnggota.getText().trim(),
-            0, 0, null, 0
+        kodePinjam,
+        new SimpleDateFormat("yyyy-MM-dd").format(tanggalPinjam),
+        fieldNamaAnggota.getText().trim(),
+        "", "", null, 0
         };
+
         
         fieldISBN.setText("");
         fieldJudul.setText("");
