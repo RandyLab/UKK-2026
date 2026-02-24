@@ -5,14 +5,18 @@
  */
 package pemgembalianbuku;
 
+import java.awt.Component;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -36,6 +40,39 @@ public class Main extends javax.swing.JFrame {
     }
     ArrayList<Buku> daftarBuku = new ArrayList<>();
     
+    public class Transaksi{
+        String kode_pinjam, tanggal_pinjam,  nama_anggota, ISBN1, ISBN2, tanggal_kembali, denda;
+        
+        public Transaksi(String kode_pinjam, String tanggal_pinjam, String nama_anggota, String ISBN1, String ISBN2, String tanggal_kembali, String denda){
+            this.kode_pinjam = kode_pinjam;
+            this.tanggal_pinjam = tanggal_pinjam;
+            this.nama_anggota = nama_anggota;
+            this.ISBN1 = ISBN1;
+            this.ISBN2 = ISBN2;
+            this.tanggal_kembali = tanggal_kembali;
+            this.denda = denda;
+        }
+    }
+    ArrayList<Transaksi> daftarTransaksi = new ArrayList<>();
+    
+    private void loadTransaksi() {
+
+        DefaultTableModel model = (DefaultTableModel) transaksiTable.getModel();
+        model.setRowCount(0);
+
+        daftarTransaksi.forEach((i) -> {
+            model.addRow(new Object[]{
+                i.kode_pinjam,
+                i.tanggal_pinjam,
+                i.nama_anggota,
+                i.ISBN1,
+                i.ISBN2,
+                i.tanggal_kembali,
+                i.denda
+            });
+        });
+}
+    
     private void bersihkanForm(){
         kodePinjamField.setText("");
         namaAnggotaField.setText("");
@@ -44,6 +81,16 @@ public class Main extends javax.swing.JFrame {
         jumlahBukuSpinner.setValue(0);
         tanggalPinjamChooser.setDate(null);
         tanggalKembaliChooser.setDate(null);
+        
+        ISBNField.setText("");
+        judulField.setText("");
+        penerbitField.setText("");
+        tahunTerbitField.setText("");
+        coverLabel.setIcon(new ImageIcon(no_image));
+        
+        DefaultTableModel model = (DefaultTableModel) bukuTable.getModel();
+        model.setRowCount(0);
+        
     }
     
     private void hitungDenda(){
@@ -77,64 +124,96 @@ public class Main extends javax.swing.JFrame {
         }
     }
     
-    private void cariBuku(){
-        String ISBN = ISBNField.getText().trim();
-        
-            for(Buku buku : daftarBuku){
-                if(ISBN.equals(buku.ISBN)) {
-                    Image cover = new ImageIcon(getClass().getResource(buku.cover_path)).getImage().getScaledInstance(130, 170, Image.SCALE_SMOOTH);
-                    
-                    judulField.setText(buku.judul);
-                    penerbitField.setText(buku.penerbit);
-                    tahunTerbitField.setText(buku.tahun_terbit);
-                    coverLabel.setIcon(new ImageIcon(cover));
-                    break;
-                }else{
-                    judulField.setText("Tidak Ditemukan");
-                    penerbitField.setText("");
-                    tahunTerbitField.setText("");
-                    coverLabel.setIcon(new ImageIcon(no_image));
-                }
-            }
+    private void cariBuku() {
+
+    String ISBN = ISBNField.getText().trim();
+    boolean ditemukan = false;
+
+    for (Buku buku : daftarBuku) {
+        if (ISBN.equals(buku.ISBN)) {
+
+            Image cover = new ImageIcon(
+                    getClass().getResource(buku.cover_path))
+                    .getImage()
+                    .getScaledInstance(130, 170, Image.SCALE_SMOOTH);
+
+            judulField.setText(buku.judul);
+            penerbitField.setText(buku.penerbit);
+            tahunTerbitField.setText(buku.tahun_terbit);
+            coverLabel.setIcon(new ImageIcon(cover));
+
+            ditemukan = true;
+            break;
+        }
     }
+
+    if (!ditemukan) {
+        judulField.setText("Tidak Ditemukan");
+        penerbitField.setText("");
+        tahunTerbitField.setText("");
+        coverLabel.setIcon(new ImageIcon(no_image));
+    }
+}
     
     private void tambahTableBuku() {
 
-    DefaultTableModel model =
-        (DefaultTableModel) bukuTable.getModel();
+        DefaultTableModel model = (DefaultTableModel) bukuTable.getModel();
 
-    String ISBN = ISBNField.getText().trim();
-    String judul = judulField.getText().trim();
+        int jumlah = (int) jumlahBukuSpinner.getValue();
 
-    if (ISBN.isEmpty() || judul.isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Data belum lengkap!");
-        return;
-    }
+        String ISBN = ISBNField.getText().trim();
+        String judul = judulField.getText().trim();
+        String penerbit = penerbitField.getText().trim();
+        String tahun_terbit = tahunTerbitField.getText().trim();
 
-    Icon icon = coverLabel.getIcon();
+        if (ISBN.isEmpty() || judul.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Data belum lengkap!");
+            return;
+        }else if (penerbit.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Buku tidak ditemukan!");
+            return;   
+        }else if(jumlahPilih >= jumlah){
+            JOptionPane.showMessageDialog(null, "Buku mencapai jumlah pinjam!");
+            return;
+        }
 
-    // fallback kalau icon kosong
-    ImageIcon coverIcon;
-    if (icon == null) {
-        coverIcon = new ImageIcon(
-            getClass().getResource("/img/no_image.png")
+        Icon icon = coverLabel.getIcon();
+
+        // fallback kalau icon kosong
+        ImageIcon coverIcon;
+        if (icon == null) {
+            coverIcon = new ImageIcon(
+                getClass().getResource("/img/no_image.png")
+            );
+        } else {
+            coverIcon = (ImageIcon) icon;
+        }
+
+        // resize icon biar rapi
+        Image img = coverIcon.getImage().getScaledInstance(
+            60, 80, Image.SCALE_SMOOTH
         );
-    } else {
-        coverIcon = (ImageIcon) icon;
+        ImageIcon resizeIcon = new ImageIcon(img);
+        // Validasi duplikat ISBN
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String existingISBN = model.getValueAt(i, 0).toString();
+
+            if (existingISBN.equalsIgnoreCase(ISBN)) {
+                JOptionPane.showMessageDialog(null, 
+                    "Buku sudah ditambahkan sebelumnya!");
+                return;
+            }
+        }
+
+        model.addRow(new Object[]{
+            ISBN,
+            judul,
+            penerbit,
+            tahun_terbit,
+            resizeIcon
+        });
+        jumlahPilih += 1;
     }
-
-    // resize icon biar rapi
-    Image img = coverIcon.getImage().getScaledInstance(
-        60, 80, Image.SCALE_SMOOTH
-    );
-    ImageIcon resizeIcon = new ImageIcon(img);
-
-    model.addRow(new Object[]{
-        ISBN,
-        judul,
-        resizeIcon
-    });
-}
     
     Image no_image = new ImageIcon(getClass().getResource("/covers/no-image.jpg")).getImage().getScaledInstance(130, 170, Image.SCALE_SMOOTH);
     int maxPilih = 2;
@@ -144,12 +223,11 @@ public class Main extends javax.swing.JFrame {
     
     public Main() {
         initComponents();
-        
-        
-        
+//        ==========================================================================================================
+//        MAIN FUNCTION
+//        ==========================================================================================================
         coverLabel.setIcon(new ImageIcon(no_image));
-        
-        
+        loadTransaksi();
         
         daftarBuku.add(new Buku("9786231809223", "PKK Kelas 12", "Stone", "2006", "/covers/pkk.jpg"));
         daftarBuku.add(new Buku("9786022446576", "PPKN", "PEAK", "2007", "/covers/pkn.jpg"));
@@ -158,6 +236,8 @@ public class Main extends javax.swing.JFrame {
         daftarBuku.add(new Buku("9786029053265", "MPR", "Elitis", "2008", "/covers/mpr.jpg"));
         daftarBuku.add(new Buku("9786025305740", "Filsafat Dalam Berbagai Perspektif", "Elitis", "2008", "/covers/filsafat.jpg"));
         daftarBuku.add(new Buku("9786232422971", "Realm Breaker", "Elitis", "2008", "/covers/realm_breaker.jpg"));
+        
+        daftarTransaksi.add(new Transaksi("1234", "12-2-2026", "Raja", "9786029053265", "208386213", "14-2-2026", "0"));
         
         ISBNField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -169,6 +249,23 @@ public class Main extends javax.swing.JFrame {
             @Override
             public void changedUpdate(DocumentEvent e) {cariBuku();}
         
+        });
+        
+        bukuTable.setRowHeight(90);
+        bukuTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+           @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+
+                JLabel label = new JLabel();
+                label.setHorizontalAlignment(JLabel.CENTER);
+
+                if (value instanceof ImageIcon) {
+                    label.setIcon((ImageIcon) value);
+                }
+
+                return label;
+            }
         });
     }
 
@@ -348,11 +445,11 @@ public class Main extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ISBN", "Judul", "Cover", "Aksi"
+                "ISBN", "Judul", "Penerbit", "Tahun Terbit", "Cover"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -373,11 +470,11 @@ public class Main extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Kode Pinjam", "Tanggal Pinjam", "Nama Anggota", "ISBN 1", "ISBN 2", "Tanggal Kembali", "Denda", "Aksi"
+                "Kode Pinjam", "Tanggal Pinjam", "Nama Anggota", "ISBN 1", "ISBN 2", "Tanggal Kembali", "Denda"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -442,7 +539,6 @@ public class Main extends javax.swing.JFrame {
     private void tambahButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahButtonActionPerformed
         jumlahBukuSpinner.setEnabled(false);
         int jumlah = (int) jumlahBukuSpinner.getValue();
-        String ISBN = ISBNField.getText().trim();
         
         if(jumlah > maxPilih){
             JOptionPane.showMessageDialog(null, "Maksimal buku yang  bisa di pinjam 2","MAX", JOptionPane.INFORMATION_MESSAGE);
@@ -455,14 +551,6 @@ public class Main extends javax.swing.JFrame {
         }
         
         if(jumlahPilih < maxPilih){
-//            String[] temp = new String[pilihISBN.length + 1];
-//            
-//            for(int i = 0; i < pilihISBN.length; i++){
-//                temp[i] = pilihISBN[i];
-//            }
-//            
-//            temp[pilihISBN.length] = ISBN;
-//            
             tambahTableBuku();
         }else{
             
