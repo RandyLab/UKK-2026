@@ -56,24 +56,53 @@ public class Main extends javax.swing.JFrame {
     ArrayList<Transaksi> daftarTransaksi = new ArrayList<>();
     
     private void loadTransaksi() {
-
-        DefaultTableModel model = (DefaultTableModel) transaksiTable.getModel();
+        DefaultTableModel model =
+            (DefaultTableModel) transaksiTable.getModel();
         model.setRowCount(0);
 
-        daftarTransaksi.forEach((i) -> {
+        for (Transaksi t : daftarTransaksi) {
+            ImageIcon cover1 = null;
+            ImageIcon cover2 = null;
+
+            if (!t.ISBN1.isEmpty()) {
+                cover1 = getCoverByISBN(t.ISBN1);
+            }
+
+            if (t.ISBN2 != null && !t.ISBN2.isEmpty()) {
+                cover2 = getCoverByISBN(t.ISBN2);
+            }
+
             model.addRow(new Object[]{
-                i.kode_pinjam,
-                i.tanggal_pinjam,
-                i.nama_anggota,
-                i.ISBN1,
-                i.ISBN2,
-                i.tanggal_kembali,
-                i.denda
+                t.kode_pinjam,
+                t.tanggal_pinjam,
+                t.nama_anggota,
+                cover1,
+                cover2,
+                t.tanggal_kembali,
+                t.denda
             });
-        });
-}
+        }
+    }
+    
+    private ImageIcon getCoverByISBN(String isbn) {
+        for (Buku b : daftarBuku) {
+            if (b.ISBN.equalsIgnoreCase(isbn)) {
+                Image img = new ImageIcon(
+                    getClass().getResource(b.cover_path)
+                ).getImage().getScaledInstance(60, 80, Image.SCALE_SMOOTH);
+
+                return new ImageIcon(img);
+            }
+        }
+
+        // fallback jika tidak ditemukan
+        Image img = no_image.getScaledInstance(60, 80, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
     
     private void bersihkanForm(){
+        
+        jumlahPilih = 0;
         kodePinjamField.setText("");
         namaAnggotaField.setText("");
         lamaPinjamField.setText("");
@@ -90,7 +119,8 @@ public class Main extends javax.swing.JFrame {
         
         DefaultTableModel model = (DefaultTableModel) bukuTable.getModel();
         model.setRowCount(0);
-        
+
+        jumlahBukuSpinner.setEnabled(true);
     }
     
     private void hitungDenda(){
@@ -122,6 +152,15 @@ public class Main extends javax.swing.JFrame {
         }else{
             dendaField.setText("0");
         }
+    }
+    
+    private boolean isKodePinjamDuplikat(String kode) {
+        for (Transaksi t : daftarTransaksi) {
+            if (t.kode_pinjam.equalsIgnoreCase(kode)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void cariBuku() {
@@ -157,63 +196,65 @@ public class Main extends javax.swing.JFrame {
     
     private void tambahTableBuku() {
 
-        DefaultTableModel model = (DefaultTableModel) bukuTable.getModel();
+    DefaultTableModel model =
+        (DefaultTableModel) bukuTable.getModel();
 
-        int jumlah = (int) jumlahBukuSpinner.getValue();
+    String ISBN = ISBNField.getText().trim();
+    String judul = judulField.getText().trim();
+    String penerbit = penerbitField.getText().trim();
+    String tahun_terbit = tahunTerbitField.getText().trim();
 
-        String ISBN = ISBNField.getText().trim();
-        String judul = judulField.getText().trim();
-        String penerbit = penerbitField.getText().trim();
-        String tahun_terbit = tahunTerbitField.getText().trim();
-
-        if (ISBN.isEmpty() || judul.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Data belum lengkap!");
-            return;
-        }else if (penerbit.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Buku tidak ditemukan!");
-            return;   
-        }else if(jumlahPilih >= jumlah){
-            JOptionPane.showMessageDialog(null, "Buku mencapai jumlah pinjam!");
-            return;
-        }
-
-        Icon icon = coverLabel.getIcon();
-
-        // fallback kalau icon kosong
-        ImageIcon coverIcon;
-        if (icon == null) {
-            coverIcon = new ImageIcon(
-                getClass().getResource("/img/no_image.png")
-            );
-        } else {
-            coverIcon = (ImageIcon) icon;
-        }
-
-        // resize icon biar rapi
-        Image img = coverIcon.getImage().getScaledInstance(
-            60, 80, Image.SCALE_SMOOTH
-        );
-        ImageIcon resizeIcon = new ImageIcon(img);
-        // Validasi duplikat ISBN
-        for (int i = 0; i < model.getRowCount(); i++) {
-            String existingISBN = model.getValueAt(i, 0).toString();
-
-            if (existingISBN.equalsIgnoreCase(ISBN)) {
-                JOptionPane.showMessageDialog(null, 
-                    "Buku sudah ditambahkan sebelumnya!");
-                return;
-            }
-        }
-
-        model.addRow(new Object[]{
-            ISBN,
-            judul,
-            penerbit,
-            tahun_terbit,
-            resizeIcon
-        });
-        jumlahPilih += 1;
+    if (ISBN.isEmpty() || judul.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Data belum lengkap!");
+        return;
     }
+
+    if (penerbit.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Buku tidak ditemukan!");
+        return;
+    }
+
+    if (jumlahPilih >= maxPilih) {
+        JOptionPane.showMessageDialog(null, "Batas pinjam tercapai!");
+        return;
+    }
+
+    // Cegah ISBN duplikat
+    for (int i = 0; i < model.getRowCount(); i++) {
+        if (model.getValueAt(i, 0).toString().equalsIgnoreCase(ISBN)) {
+            JOptionPane.showMessageDialog(
+                null, "Buku sudah ditambahkan!");
+            return;
+        }
+    }
+
+    // cover
+    ImageIcon coverIcon;
+    Icon icon = coverLabel.getIcon();
+
+    if (icon instanceof ImageIcon) {
+        coverIcon = (ImageIcon) icon;
+    } else {
+        coverIcon = new ImageIcon(
+            getClass().getResource("/img/no_image.png")
+        );
+    }
+
+    Image img = coverIcon.getImage()
+        .getScaledInstance(60, 80, Image.SCALE_SMOOTH);
+
+    ImageIcon resizeIcon = new ImageIcon(img);
+
+    model.addRow(new Object[]{
+        ISBN,
+        judul,
+        penerbit,
+        tahun_terbit,
+        resizeIcon
+    });
+
+    jumlahPilih++;
+}
     
     Image no_image = new ImageIcon(getClass().getResource("/covers/no-image.jpg")).getImage().getScaledInstance(130, 170, Image.SCALE_SMOOTH);
     int maxPilih = 2;
@@ -267,6 +308,34 @@ public class Main extends javax.swing.JFrame {
                 return label;
             }
         });
+        
+        transaksiTable.setRowHeight(90);
+
+        DefaultTableCellRenderer coverRenderer =
+            new DefaultTableCellRenderer() {
+
+                @Override
+                public Component getTableCellRendererComponent(
+                    JTable table, Object value,
+                    boolean isSelected, boolean hasFocus,
+                    int row, int column) {
+
+                    JLabel label = new JLabel();
+                    label.setHorizontalAlignment(JLabel.CENTER);
+
+                    if (value instanceof ImageIcon) {
+                        label.setIcon((ImageIcon) value);
+                    }
+
+                    return label;
+                }
+        };
+
+        // Kolom ISBN 1 & ISBN 2
+        transaksiTable.getColumnModel().getColumn(3)
+                .setCellRenderer(coverRenderer);
+        transaksiTable.getColumnModel().getColumn(4)
+                .setCellRenderer(coverRenderer);
     }
 
     /**
@@ -507,6 +576,11 @@ public class Main extends javax.swing.JFrame {
         simpanButton.setForeground(new java.awt.Color(255, 255, 255));
         simpanButton.setText("Simpan");
         simpanButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        simpanButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                simpanButtonActionPerformed(evt);
+            }
+        });
         jPanel5.add(simpanButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 30));
 
         bersihkanButton.setBackground(new java.awt.Color(0, 40, 112));
@@ -537,25 +611,47 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_keluarButtonActionPerformed
 
     private void tambahButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahButtonActionPerformed
+                                           
+    int jumlah = (int) jumlahBukuSpinner.getValue();
+
+    if (jumlah <= 0) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Jumlah buku tidak valid",
+            "Invalid",
+            JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+
+    if (jumlah > maxPilih) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Maksimal buku yang bisa dipinjam 2",
+            "MAX",
+            JOptionPane.INFORMATION_MESSAGE
+        );
+        jumlahBukuSpinner.setValue(maxPilih);
+        return;
+    }
+
+    if (jumlahPilih >= jumlah) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Jumlah buku sudah sesuai spinner!",
+            "Validasi",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    tambahTableBuku();
+
+    // 🔒 kunci spinner setelah buku pertama ditambah
+    if (jumlahPilih > 0) {
         jumlahBukuSpinner.setEnabled(false);
-        int jumlah = (int) jumlahBukuSpinner.getValue();
-        
-        if(jumlah > maxPilih){
-            JOptionPane.showMessageDialog(null, "Maksimal buku yang  bisa di pinjam 2","MAX", JOptionPane.INFORMATION_MESSAGE);
-            jumlahBukuSpinner.setEnabled(true);
-            return;
-        }else if(jumlah <= 0){
-            JOptionPane.showMessageDialog(null, "Jumlah buku invalid","Invalid", JOptionPane.ERROR_MESSAGE);
-            jumlahBukuSpinner.setEnabled(true);
-            return;
-        }
-        
-        if(jumlahPilih < maxPilih){
-            tambahTableBuku();
-        }else{
-            
-        }
-        
+    }
+
     }//GEN-LAST:event_tambahButtonActionPerformed
 
     private void bersihkanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bersihkanButtonActionPerformed
@@ -572,6 +668,114 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
         cariBuku();
     }//GEN-LAST:event_ISBNFieldActionPerformed
+
+    private void simpanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanButtonActionPerformed
+
+    // 1. Ambil kode pinjam
+    String kodePinjam = kodePinjamField.getText().trim();
+
+    // 2. Validasi kode kosong
+    if (kodePinjam.isEmpty()) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Kode pinjam tidak boleh kosong!",
+            "Validasi",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    // 3. Validasi duplikat
+    if (isKodePinjamDuplikat(kodePinjam)) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Kode pinjam sudah digunakan!\nGunakan kode lain.",
+            "Duplikat",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    // 4. Validasi spinner vs buku
+    int jumlahSpinner = (int) jumlahBukuSpinner.getValue();
+    if (jumlahPilih < jumlahSpinner) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Jumlah buku belum sesuai spinner,\nsilakan tambah buku!",
+            "Validasi",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    // 5. Validasi form
+    if (namaAnggotaField.getText().trim().isEmpty()
+        || tanggalPinjamChooser.getDate() == null
+        || tanggalKembaliChooser.getDate() == null) {
+
+        JOptionPane.showMessageDialog(
+            null,
+            "Data peminjaman belum lengkap!",
+            "Validasi",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    if (jumlahPilih <= 0) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Belum ada buku yang dipilih!",
+            "Validasi",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    // 6. Ambil ISBN dari tabel buku (table TEMP)
+    DefaultTableModel modelBuku =
+        (DefaultTableModel) bukuTable.getModel();
+
+    String ISBN1 = modelBuku.getValueAt(0, 0).toString();
+    String ISBN2 = "";
+
+    if (jumlahPilih > 1 && modelBuku.getRowCount() > 1) {
+        ISBN2 = modelBuku.getValueAt(1, 0).toString();
+    }
+
+    // 7. Format tanggal
+    String tanggalPinjam = new java.text.SimpleDateFormat("dd-MM-yyyy")
+            .format(tanggalPinjamChooser.getDate());
+
+    String tanggalKembali = new java.text.SimpleDateFormat("dd-MM-yyyy")
+            .format(tanggalKembaliChooser.getDate());
+
+    String namaAnggota = namaAnggotaField.getText().trim();
+    String denda = dendaField.getText().trim();
+
+    // 8. Simpan ke ArrayList
+    daftarTransaksi.add(new Transaksi(
+        kodePinjam,
+        tanggalPinjam,
+        namaAnggota,
+        ISBN1,
+        ISBN2,
+        tanggalKembali,
+        denda
+    ));
+
+    // 9. Refresh & reset (sesuai konfirmasi kamu)
+    loadTransaksi();
+    bersihkanForm(); // reset semua seperti baru buka aplikasi
+
+    JOptionPane.showMessageDialog(
+        null,
+        "Transaksi berhasil disimpan!",
+        "Sukses",
+        JOptionPane.INFORMATION_MESSAGE
+    );
+
+    }//GEN-LAST:event_simpanButtonActionPerformed
 
     /**
      * @param args the command line arguments
