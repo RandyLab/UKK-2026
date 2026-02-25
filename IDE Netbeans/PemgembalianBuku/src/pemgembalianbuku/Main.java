@@ -8,6 +8,7 @@ package pemgembalianbuku;
 import java.awt.Component;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -18,13 +19,20 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 /**
  *
  * @author Administrator
  */
 public class Main extends javax.swing.JFrame {
+
+    private void bersihkanFormBuku() {
+        ISBNField.setText("");
+        judulField.setText("");
+        penerbitField.setText("");
+        tahunTerbitField.setText("");
+        coverLabel.setIcon(new ImageIcon(no_image));
+    }
 
     
     public class Buku {
@@ -123,37 +131,52 @@ public class Main extends javax.swing.JFrame {
         jumlahBukuSpinner.setEnabled(true);
     }
     
-    private void hitungDenda(){
+
+    private void hitungDenda() {
         Date tanggalPinjam = tanggalPinjamChooser.getDate();
         Date tanggalKembali = tanggalKembaliChooser.getDate();
-        
+
         if (tanggalPinjam == null || tanggalKembali == null) {
             dendaField.setText("0");
             lamaPinjamField.setText("0");
             return;
         }
-        
-        Long selisihMil = tanggalKembali.getTime() - tanggalPinjam.getTime() ;
-        Long lamaPinjam = selisihMil / (1000 * 60 * 60 * 24);
-        
-        
-        if(lamaPinjam < 0){
-            JOptionPane.showMessageDialog(null, "Tanggal kembali tidak boleh lebih kecil daripada tanggal pinjam!" + lamaPinjam);
+        if (tanggalKembali.before(tanggalPinjam)) {
+            JOptionPane.showMessageDialog(null,
+                    "Tanggal kembali tidak boleh lebih kecil daripada tanggal pinjam!");
             dendaField.setText("0");
             lamaPinjamField.setText("0");
             return;
         }
-        
-        lamaPinjamField.setText(String.valueOf(lamaPinjam));
-        
-        if(lamaPinjam > 5){
-            long denda = (lamaPinjam - 5) * 5000;
+
+        Calendar calPinjam = Calendar.getInstance();
+        Calendar calKembali = Calendar.getInstance();
+
+        calPinjam.setTime(tanggalPinjam);
+        calKembali.setTime(tanggalKembali);
+
+        int hariKerja = 0;
+
+        while (!calPinjam.after(calKembali)) {
+            int hari = calPinjam.get(Calendar.DAY_OF_WEEK);
+
+            if (hari != Calendar.SATURDAY && hari != Calendar.SUNDAY) {
+                hariKerja++;
+            }
+
+            calPinjam.add(Calendar.DATE, 1);
+        }
+
+        lamaPinjamField.setText(String.valueOf(hariKerja));
+
+        if (hariKerja > 5) {
+            long denda = (hariKerja - 5) * 5000;
             dendaField.setText(String.valueOf(denda));
-        }else{
+        } else {
             dendaField.setText("0");
         }
     }
-    
+
     private boolean isKodePinjamDuplikat(String kode) {
         for (Transaksi t : daftarTransaksi) {
             if (t.kode_pinjam.equalsIgnoreCase(kode)) {
@@ -205,7 +228,7 @@ public class Main extends javax.swing.JFrame {
     String tahun_terbit = tahunTerbitField.getText().trim();
 
     if (ISBN.isEmpty() || judul.isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Data belum lengkap!");
+        JOptionPane.showMessageDialog(null, "Data pinjam belum lengkap!");
         return;
     }
 
@@ -277,8 +300,6 @@ public class Main extends javax.swing.JFrame {
         daftarBuku.add(new Buku("9786029053265", "MPR", "Elitis", "2008", "/covers/mpr.jpg"));
         daftarBuku.add(new Buku("9786025305740", "Filsafat Dalam Berbagai Perspektif", "Elitis", "2008", "/covers/filsafat.jpg"));
         daftarBuku.add(new Buku("9786232422971", "Realm Breaker", "Elitis", "2008", "/covers/realm_breaker.jpg"));
-        
-        daftarTransaksi.add(new Transaksi("1234", "12-2-2026", "Raja", "9786029053265", "208386213", "14-2-2026", "0"));
         
         ISBNField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -638,7 +659,7 @@ public class Main extends javax.swing.JFrame {
     if (jumlahPilih >= jumlah) {
         JOptionPane.showMessageDialog(
             null,
-            "Jumlah buku sudah sesuai spinner!",
+            "Jumlah buku sudah sesuai jumlah pilih!",
             "Validasi",
             JOptionPane.WARNING_MESSAGE
         );
@@ -646,6 +667,8 @@ public class Main extends javax.swing.JFrame {
     }
 
     tambahTableBuku();
+    bersihkanFormBuku();
+    ISBNField.requestFocus();
 
     // 🔒 kunci spinner setelah buku pertama ditambah
     if (jumlahPilih > 0) {
@@ -684,6 +707,16 @@ public class Main extends javax.swing.JFrame {
         );
         return;
     }
+    
+    if (jumlahPilih <= 0) {
+        JOptionPane.showMessageDialog(
+            null,
+            "Belum ada buku yang dipilih!",
+            "Validasi",
+            JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
 
     // 3. Validasi duplikat
     if (isKodePinjamDuplikat(kodePinjam)) {
@@ -701,7 +734,7 @@ public class Main extends javax.swing.JFrame {
     if (jumlahPilih < jumlahSpinner) {
         JOptionPane.showMessageDialog(
             null,
-            "Jumlah buku belum sesuai spinner,\nsilakan tambah buku!",
+            "Jumlah buku belum sesuai jumlah pilih,\nsilakan tambah buku!",
             "Validasi",
             JOptionPane.WARNING_MESSAGE
         );
@@ -716,16 +749,6 @@ public class Main extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(
             null,
             "Data peminjaman belum lengkap!",
-            "Validasi",
-            JOptionPane.WARNING_MESSAGE
-        );
-        return;
-    }
-
-    if (jumlahPilih <= 0) {
-        JOptionPane.showMessageDialog(
-            null,
-            "Belum ada buku yang dipilih!",
             "Validasi",
             JOptionPane.WARNING_MESSAGE
         );
