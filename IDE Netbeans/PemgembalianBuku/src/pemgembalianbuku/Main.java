@@ -685,6 +685,7 @@ public class Main extends javax.swing.JFrame {
     private void tanggalKembaliChooserPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_tanggalKembaliChooserPropertyChange
         // TODO add your handling code here:
         hitungDenda();
+        ISBNField.requestFocus();
     }//GEN-LAST:event_tanggalKembaliChooserPropertyChange
 
     private void ISBNFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ISBNFieldActionPerformed
