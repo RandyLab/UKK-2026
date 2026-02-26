@@ -212,6 +212,59 @@ button:disabled {
   overflow-x: auto;
 }
 
+.tabel-buku-dipilih {
+  margin-top: 25px;
+  overflow-x: auto;
+}
+
+.tabel-buku-dipilih table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05);
+}
+
+.tabel-buku-dipilih th,
+.tabel-buku-dipilih td {
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.85rem;
+}
+
+.tabel-buku-dipilih th {
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+  color: white;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.tabel-buku-dipilih tr:nth-child(even) {
+  background: #f8fbff;
+}
+
+.tabel-buku-dipilih tr:hover {
+  background: #e0f2fe;
+  transition: 0.25s;
+}
+
+.tabel-buku-dipilih td img.cover-table {
+  width: 50px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.tabel-buku-dipilih button {
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  background: #f87171;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
