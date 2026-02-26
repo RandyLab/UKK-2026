@@ -140,9 +140,10 @@ function renderTabelBukuDipilih() {
 
 function renderTabelPinjam() {
   let html = "";
-  peminjaman.forEach((p) => {
+  peminjaman.forEach((p, index) => {
     const buku1 = daftarBuku.find((b) => b.isbn === p.isbn1);
     const buku2 = daftarBuku.find((b) => b.isbn === p.isbn2);
+
     html += `<tr>
         <td>${p.kode}</td>
         <td>${p.tglPinjam}</td>
@@ -155,9 +156,28 @@ function renderTabelPinjam() {
         }" alt="cover"></td>
         <td>${p.tglKembali}</td>
         <td>Rp ${p.denda.toLocaleString("id-ID")}</td>
+        <td>
+          <button class="hapus-transaksi" data-index="${index}">
+            Hapus
+          </button>
+        </td>
       </tr>`;
   });
+
   tbodyPinjam.innerHTML = html;
+
+  // EVENT HAPUS
+  document.querySelectorAll(".hapus-transaksi").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const index = parseInt(this.dataset.index);
+
+      if (confirm("Yakin ingin menghapus transaksi ini?")) {
+        peminjaman.splice(index, 1);
+        renderTabelPinjam();
+        alert("Transaksi berhasil dihapus!");
+      }
+    });
+  });
 }
 
 function resetFormBuku() {
