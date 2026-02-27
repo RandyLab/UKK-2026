@@ -34,7 +34,7 @@
           </div>
           <div class="form-group">
             <label>Jumlah Buku</label>
-            <input type="number" id="jumlahBuku" min="1" max="2" value="1" />
+            <input type="number" id="jumlahBuku" value="1" />
           </div>
         </div>
         <div class="form-row">
@@ -85,46 +85,51 @@
         </div>
       </section>
 
-      <!-- Tabel Buku Dipilih -->
-      <section class="tabel-buku-dipilih">
-        <h3>Buku yang Dipinjam</h3>
-        <table id="tabelBukuDipilih">
-          <thead>
-            <tr>
-              <th>ISBN</th>
-              <th>Judul</th>
-              <th>Penerbit</th>
-              <th>Tahun</th>
-              <th>Cover</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyBukuDipilih">
-            <!-- Data buku dipilih akan muncul di sini -->
-          </tbody>
-        </table>
-      </section>
+      <div class="container-table">
+        <!-- Tabel Buku Dipilih -->
+        <section class="tabel-buku-dipilih">
+          <h3>Buku yang Dipinjam</h3>
+          <table id="tabelBukuDipilih">
+            <thead>
+              <tr>
+                <th>ISBN</th>
+                <th>Judul</th>
+                <th>Penerbit</th>
+                <th>Tahun</th>
+                <th>Cover</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyBukuDipilih">
+              <!-- Data buku dipilih akan muncul di sini -->
+            </tbody>
+          </table>
+        </section>
 
-      <!-- Tabel Data Peminjaman -->
-      <section class="tabel-data">
-  <table id="tabelPinjam">
-    <thead>
-      <tr>
-        <th>Kode Pinjam</th>
-        <th>Tanggal Pinjam</th>
-        <th>Nama Anggota</th>
-        <th>Cover 1</th>
-        <th>Cover 2</th>
-        <th>Tanggal Kembali</th>
-        <th>Denda</th>
-        <th>Aksi</th> <!-- TAMBAH INI -->
-      </tr>
-    </thead>
-    <tbody id="tbodyPinjam">
-    </tbody>
-  </table>
-</section>
-
+        <!-- Tabel Data Peminjaman -->
+        <section class="tabel-data">
+          <h3>Transaksi</h3>
+          <table id="tabelPinjam">
+            <thead>
+              <tr>
+                <th>Kode Pinjam</th>
+                <th>Tanggal Pinjam</th>
+                <th>Nama Anggota</th>
+                <th>Cover 1</th>
+                <th>Cover 2</th>
+                <th>Cover 3</th>
+                <th>Cover 4</th>
+                <th>Cover 5</th>
+                <th>Tanggal Kembali</th>
+                <th>Denda</th>
+                <th>Aksi</th>
+                <!-- TAMBAH INI -->
+              </tr>
+            </thead>
+            <tbody id="tbodyPinjam"></tbody>
+          </table>
+        </section>
+      </div>
       <!-- Tombol Aksi -->
       <div class="actions">
         <button id="simpan">Simpan</button>

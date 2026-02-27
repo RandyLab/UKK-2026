@@ -143,6 +143,9 @@ function renderTabelPinjam() {
   peminjaman.forEach((p, index) => {
     const buku1 = daftarBuku.find((b) => b.isbn === p.isbn1);
     const buku2 = daftarBuku.find((b) => b.isbn === p.isbn2);
+    const buku3 = daftarBuku.find((b) => b.isbn === p.isbn3);
+    const buku4 = daftarBuku.find((b) => b.isbn === p.isbn4);
+    const buku5 = daftarBuku.find((b) => b.isbn === p.isbn5);
 
     html += `<tr>
         <td>${p.kode}</td>
@@ -153,6 +156,15 @@ function renderTabelPinjam() {
         }" alt="cover"></td>
         <td><img class="cover-table" src="${
           buku2 ? buku2.cover : "covers/no-image.jpg"
+        }" alt="cover"></td>
+        <td><img class="cover-table" src="${
+          buku3 ? buku3.cover : "covers/no-image.jpg"
+        }" alt="cover"></td>
+        <td><img class="cover-table" src="${
+          buku4 ? buku4.cover : "covers/no-image.jpg"
+        }" alt="cover"></td>
+        <td><img class="cover-table" src="${
+          buku5 ? buku5.cover : "covers/no-image.jpg"
         }" alt="cover"></td>
         <td>${p.tglKembali}</td>
         <td>Rp ${p.denda.toLocaleString("id-ID")}</td>
@@ -207,19 +219,19 @@ function isKodePinjamUnique(kode) {
 
 function validateJumlahBuku() {
   const jumlah = parseInt(jumlahBukuInput.value);
-  if (isNaN(jumlah) || jumlah < 1 || jumlah > 2) {
-    alert("Jumlah buku harus antara 1 - 2");
+  if (isNaN(jumlah) || jumlah < 1 || jumlah > 5) {
+    alert("Jumlah buku harus antara 1 - 5");
     return false;
   }
   return true;
 }
 
 // ==================== EVENT ====================
-jumlahBukuInput.addEventListener("input", function () {
-  let val = parseInt(this.value);
-  if (isNaN(val) || val < 1) this.value = 1;
-  if (val > 2) this.value = 2;
-});
+// jumlahBukuInput.addEventListener("input", function () {
+//   let val = parseInt(this.value);
+//   if (isNaN(val) || val < 1) this.value = 1;
+//   if (val > 2) this.value = 2;
+// });
 
 isbnInput.addEventListener("input", function () {
   const buku = daftarBuku.find((b) => b.isbn === this.value.trim());
@@ -236,7 +248,14 @@ isbnInput.addEventListener("input", function () {
 
 tambahBukuBtn.addEventListener("click", function () {
   const isbn = isbnInput.value.trim();
+  const jumlah = jumlahBukuInput.value;
   if (!isbn) return alert("Masukkan ISBN terlebih dahulu!");
+  if (jumlah <= 0) {
+    return alert("Jumlah Buku tidak Valid!");
+  }
+  if (jumlah > 5) {
+    return alert("Jumlah Buku maksimal 5!");
+  }
   const buku = daftarBuku.find((b) => b.isbn === isbn);
   if (!buku) return alert("Buku dengan ISBN tidak ditemukan!");
   const maxBuku = parseInt(jumlahBukuInput.value);
@@ -272,6 +291,9 @@ simpanBtn.addEventListener("click", function () {
     nama: namaAnggotaInput.value,
     isbn1: bukuDipilih[0] ? bukuDipilih[0].isbn : "",
     isbn2: bukuDipilih[1] ? bukuDipilih[1].isbn : "",
+    isbn3: bukuDipilih[2] ? bukuDipilih[2].isbn : "",
+    isbn4: bukuDipilih[3] ? bukuDipilih[3].isbn : "",
+    isbn5: bukuDipilih[4] ? bukuDipilih[4].isbn : "",
     tglKembali: tglKembaliInput.value,
     denda: denda,
   };
