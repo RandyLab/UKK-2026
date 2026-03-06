@@ -1,0 +1,152 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>perpustakaan sederhana</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Perpustakaan Mini</h1>
+      </header>
+
+      <section id="formPinjam">
+        <h3>Pinjam</h3>
+        <div class="input-box">
+          <label for="kodePinjam">Kode Pinjam</label>
+          <input
+            type="text"
+            name="kodePinjam"
+            id="kodePinjam"
+            placeholder="Masukkan Kode Pinjam"
+          />
+        </div>
+
+        <div class="input-row">
+          <div class="input-box">
+            <label for="tanggalPinjam">Tanggal Pinjam</label>
+            <input
+              type="date"
+              name="tanggalPinjam"
+              id="tanggalPinjam"
+              placeholder="Masukkan Tanggal Pinjam"
+            />
+          </div>
+          <div class="input-box">
+            <label for="namaAnggota">Nama Anggota</label>
+            <input
+              type="text"
+              name="namaAnggota"
+              id="namaAnggota"
+              placeholder="Masukkan Nama Anda"
+            />
+          </div>
+          <div class="input-box">
+            <label for="jumlahPinjam">Jumlah Pinjam</label>
+            <input
+              type="number"
+              name="jumlahPinjam"
+              id="jumlahPinjam"
+              placeholder="Masukkan Jumlah Pinjam"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="pilihBuku">
+        <h3>Pilih Buku</h3>
+        <div class="input-row">
+          <div class="input-box">
+            <label for="ISBN">ISBN</label>
+            <input
+              type="text"
+              name="ISBN"
+              id="ISBN"
+              placeholder="Masukkan ISBN"
+            />
+          </div>
+          <div class="input-box">
+            <label for="judulBuku">Judul Buku</label>
+            <input type="text" name="judulBuku" id="judulBuku" readonly />
+          </div>
+          <div class="input-box">
+            <label for="penerbit">Penerbit</label>
+            <input type="text" name="penerbit" id="penerbit" readonly />
+          </div>
+          <div class="input-box">
+            <label for="tahunTerbit">Tahun Terbit</label>
+            <input type="text" name="tahunTerbit" id="tahunTerbit" readonly />
+          </div>
+          <div class="input-row">
+            <button onclick="pilihBuku()">Pilih</button>
+            <button>Pinjam</button>
+          </div>
+        </div>
+        <div class="container-preview">
+          <img
+            id="previewCover"
+            src="../covers/no-image.jpg"
+            alt="Cover Buku"
+          />
+        </div>
+      </section>
+
+      <table border="1">
+        <thead>
+          <th>IBSN</th>
+          <th>Judul Buku</th>
+          <th>Penerbit</th>
+          <th>Tahun Terbit</th>
+          <th>Aksi</th>
+        </thead>
+        <tbody id="tBodyBuku"></tbody>
+      </table>
+
+      <section id="formKembali">
+        <h3>Kembalikan Buku</h3>
+        <div class="input-row">
+          <div class="input-box">
+            <label for="tanggalKembali">Tanggal Kembali</label>
+            <input
+              type="date"
+              name="tanggalKembali"
+              id="tanggalKembali"
+              placeholder="Masukkan tanggal kembali"
+            />
+          </div>
+          <div class="input-box">
+            <label for="lamaPinjam">Lama Pinjam</label>
+            <input
+              type="text"
+              name="lamaPinjam"
+              id="lamaPinjam"
+              placeholder="0"
+            />
+          </div>
+          <div class="input-box">
+            <label for="denda">Denda</label>
+            <input type="text" name="denda" id="denda" placeholder="0" />
+          </div>
+          <button>Kembalikan</button>
+        </div>
+      </section>
+
+      <table border="1">
+        <thead>
+          <th>Kode Pinjam</th>
+          <th>Tanggal Pinjam</th>
+          <th>Nama Anggota</th>
+          <th>Cover 1</th>
+          <th>Cover 2</th>
+          <th>Tanggal Kembali</th>
+          <th>Denda</th>
+          <th>Aksi</th>
+        </thead>
+        <tbody id="tBodyTransaksi"></tbody>
+      </table>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+#previewCover {
+  height: 16rem;
+  width: 12rem;
+  object-fit: contain;
+}
