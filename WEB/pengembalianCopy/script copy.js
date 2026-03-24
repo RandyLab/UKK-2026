@@ -1,4 +1,4 @@
-// ==================== CLASS BUKU ====================
+// ====================CLASS BUKU====================
 class Buku {
   constructor(isbn, judul, penerbit, tahun, cover) {
     this.isbn = isbn;
@@ -9,7 +9,7 @@ class Buku {
   }
 }
 
-// ==================== DATA ====================
+// ====================DATA====================
 let daftarBuku = [
   new Buku("9786231809223", "PKK Kelas 12", "Stone", "2006", "covers/pkk.jpg"),
   new Buku("9786022446576", "PPKN", "PEAK", "2007", "covers/pkn.jpg"),
@@ -62,7 +62,7 @@ let daftarBuku = [
 let peminjaman = [];
 let bukuDipilih = [];
 
-// ==================== ELEMENT ====================
+// ====================ELEMENT====================
 const kodePinjamInput = document.getElementById("kodePinjam");
 const tglPinjamInput = document.getElementById("tglPinjam");
 const namaAnggotaInput = document.getElementById("namaAnggota");
@@ -85,12 +85,13 @@ const simpanBtn = document.getElementById("simpan");
 const bersihkanBtn = document.getElementById("bersihkan");
 const keluarBtn = document.getElementById("keluar");
 
-// ==================== FUNGSI ====================
+// ==================Function=================
+
 function hitungLamaPinjam(tglPinjam, tglKembali) {
   if (!tglPinjam || !tglKembali) return 0;
   const start = new Date(tglPinjam);
   const end = new Date(tglKembali);
-  const diffTime = Math.abs(end - start);
+  const diffTime = Math.avs(end - start);
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
@@ -120,13 +121,13 @@ function renderTabelBukuDipilih() {
   let html = "";
   bukuDipilih.forEach((buku, index) => {
     html += `<tr>
-        <td>${buku.isbn}</td>
-        <td>${buku.judul}</td>
-        <td>${buku.penerbit}</td>
-        <td>${buku.tahun}</td>
-        <td><img class="cover-table" src="${buku.cover}" alt="cover" onerror="this.src='covers/no-image.jpg'"></td>
-        <td><button class="hapus-buku" data-index="${index}">Hapus</button></td>
-      </tr>`;
+    <td>${buku.isbn}</td>
+    <td>${buku.judul}</td>
+    <td>${buku.penerbit}</td>
+    <td>${buku.tahun}</td>
+    <td><img class="cover-table" src="${buku.cover}" alt="Cover Buku" onerror="this.src='../covers/no-image.jpg'"></td>
+    <td><button class="hapus-buku" data-index="${index}">Hapus</button></td>
+    </tr>`;
   });
   tbodyBukuDipilih.innerHTML = html;
 
@@ -145,28 +146,25 @@ function renderTabelPinjam() {
     const buku2 = daftarBuku.find((b) => b.isbn === p.isbn2);
 
     html += `<tr>
-        <td>${p.kode}</td>
-        <td>${p.tglPinjam}</td>
-        <td>${p.nama}</td>
-        <td><img class="cover-table" src="${
-          buku1 ? buku1.cover : "covers/no-image.jpg"
-        }" alt="cover"></td>
-        <td><img class="cover-table" src="${
-          buku2 ? buku2.cover : "covers/no-image.jpg"
-        }" alt="cover"></td>
-        <td>${p.tglKembali}</td>
-        <td>Rp ${p.denda.toLocaleString("id-ID")}</td>
-        <td>
-          <button class="hapus-transaksi" data-index="${index}">
-            Hapus
-          </button>
-        </td>
-      </tr>`;
+    <td>${p.kode}</td>
+    <td>${p.tglPinjam}</td>
+    <td>${p.nama}</td>
+    <td><img class="cover-table" src="${
+      buku1 ? buku.cover : "../covers/no-image.jpg"
+    }" alt="cover"></td>
+    <td><img class="cover-table" src="${
+      buku2 ? buku.cover : "../covers/no-image.jpg"
+    }" alt="cover"></td>
+    <td>${p.tglKembali}</td>
+    <td>Rp ${p.denda.toLocalString("id-ID")}</td>
+    <td>
+    <buttton class="hapus-transaksi" data-index"${index}">Hapus</button>
+    </td>
+    </tr>`;
   });
 
   tbodyPinjam.innerHTML = html;
 
-  // EVENT HAPUS
   document.querySelectorAll(".hapus-transaksi").forEach((btn) => {
     btn.addEventListener("click", function () {
       const index = parseInt(this.dataset.index);
@@ -174,7 +172,7 @@ function renderTabelPinjam() {
       if (confirm("Yakin ingin menghapus transaksi ini?")) {
         peminjaman.splice(index, 1);
         renderTabelPinjam();
-        alert("Transaksi berhasil dihapus!");
+        alert("Transaksi berhasil di hapus");
       }
     });
   });
@@ -194,7 +192,7 @@ function resetSemuaForm() {
   namaAnggotaInput.value = "";
   jumlahBukuInput.value = "1";
   tglKembaliInput.value = "";
-  lamaPinjamInput.value = "0 Hari";
+  lamaPinjamInput.value = "0 hari";
   dendaInput.value = "0";
   resetFormBuku();
   bukuDipilih = [];
@@ -214,32 +212,27 @@ function validateJumlahBuku() {
   return true;
 }
 
-// ==================== EVENT ====================
-jumlahBukuInput.addEventListener("input", function () {
-  let val = parseInt(this.value);
-  if (isNaN(val) || val < 1) this.value = 1;
-  if (val > 2) this.value = 2;
-});
-
+// ==============Listener==================
 isbnInput.addEventListener("input", function () {
   const buku = daftarBuku.find((b) => b.isbn === this.value.trim());
   if (buku) {
     judulInput.value = buku.judul;
     penerbitInput.value = buku.penerbit;
     tahunInput.value = buku.tahun;
-    coverImage.src = buku.cover;
+    coverImage.value = buku.cover;
     coverImage.onerror = function () {
-      this.src = "covers/no-image.jpg";
+      this.src = "../covers/no-image.jpg";
     };
   } else resetFormBuku();
 });
 
-tambahBukuBtn.addEventListener("click", function () {
+tambahBukuBtn.addEventListener("clikc", function () {
   const isbn = isbnInput.value.trim();
-  if (!isbn) return alert("Masukkan ISBN terlebih dahulu!");
   const buku = daftarBuku.find((b) => b.isbn === isbn);
-  if (!buku) return alert("Buku dengan ISBN tidak ditemukan!");
   const maxBuku = parseInt(jumlahBukuInput.value);
+
+  if (!isbn) return alert("Masukkan ISBN terlebih dahulu!");
+  if (!buku) return alert("Buku tidak ditemukan!");
   if (bukuDipilih.length >= maxBuku) return alert(`Maksimal ${maxBuku} buku!`);
   if (bukuDipilih.some((b) => b.isbn === isbn))
     return alert("Buku sudah ditambahkan!");
@@ -256,9 +249,9 @@ simpanBtn.addEventListener("click", function () {
   const kode = kodePinjamInput.value.trim();
   if (!kode) return alert("Kode pinjam harus diisi!");
   if (!isKodePinjamUnique(kode)) return alert("Kode pinjam sudah digunakan!");
-  if (!validateJumlahBuku()) return;
+  if (!validateJumlahBuku) return;
   if (!tglPinjamInput.value) return alert("Tanggal pinjam harus diisi!");
-  if (!namaAnggotaInput.value) return alert("Nama anggota harus diisi!");
+  if (!namaAnggotaInput.value) return alert("Nama anggota pinjam harus diisi!");
   const maxBuku = parseInt(jumlahBukuInput.value);
   if (bukuDipilih.length !== maxBuku)
     return alert(`Anda harus memilih ${maxBuku} buku!`);
@@ -293,5 +286,4 @@ keluarBtn.addEventListener("click", function () {
   }
 });
 
-// Inisialisasi
 resetSemuaForm();

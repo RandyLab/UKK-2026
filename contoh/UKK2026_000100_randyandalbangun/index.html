@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Peminjaman Buku</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <h1>Perpustakaan Mini</h1>
+      </header>
+
+      <div class="container-form">
+        <!-- Form Peminjaman -->
+        <section class="form-peminjaman">
+          <h2>Data Peminjaman</h2>
+          <div class="form-group">
+            <label>Kode Peminjaman</label>
+            <input
+              type="text"
+              id="kodePinjam"
+              placeholder="Masukkan kode pinjam"
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tanggal Pinjam</label>
+              <input type="date" id="tglPinjam" />
+            </div>
+            <div class="form-group">
+              <label>Nama Anggota</label>
+              <input type="text" id="namaAnggota" placeholder="Nama lengkap" />
+            </div>
+            <div class="form-group">
+              <label>Jumlah Buku</label>
+              <input type="number" id="jumlahBuku" min="1" max="2" value="1" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tanggal Pengembalian</label>
+              <input type="date" id="tglKembali" />
+            </div>
+            <div class="form-group">
+              <label>Lama Peminjaman</label>
+              <input
+                type="text"
+                id="lamaPinjam"
+                placeholder="0 Hari"
+                readonly
+              />
+            </div>
+            <div class="form-group">
+              <label>Denda (Rp.)</label>
+              <input type="text" id="denda" value="0" readonly />
+            </div>
+          </div>
+        </section>
+
+        <!-- Pilih Buku -->
+        <section class="pilih-buku">
+          <h2>Pilih Buku</h2>
+          <div class="container-pilih">
+            <div class="form-row">
+              <div class="form-group">
+                <label>ISBN</label>
+                <input type="text" id="isbn" placeholder="Masukkan ISBN" />
+              </div>
+              <div class="form-group">
+                <label>Judul</label>
+                <input type="text" id="judul" readonly />
+              </div>
+              <div class="form-group">
+                <label>Penerbit</label>
+                <input type="text" id="penerbit" readonly />
+              </div>
+              <div class="form-group">
+                <label>Tahun Terbit</label>
+                <input type="text" id="tahun" readonly />
+              </div>
+              <div class="form-group">
+                <button id="tambahBuku">Tambah</button>
+              </div>
+            </div>
+            <div class="form-group" id="cover-preview">
+              <label>Cover</label>
+              <div class="cover-preview">
+                <img
+                  id="coverImage"
+                  src="covers/no-image.jpg"
+                  alt="Cover Buku"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="container-table">
+          <!-- Tabel Buku Dipilih -->
+          <div class="tabel-buku-dipilih">
+            <h3>Buku yang Dipinjam</h3>
+            <table id="tabelBukuDipilih">
+              <thead>
+                <tr>
+                  <th>ISBN</th>
+                  <th>Judul</th>
+                  <th>Penerbit</th>
+                  <th>Tahun</th>
+                  <th>Cover</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyBukuDipilih">
+                <!-- Data buku dipilih akan muncul di sini -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <section class="container-table">
+        <!-- Tabel Data Peminjaman -->
+        <div class="tabel-data">
+          <h3>Transaksi Peminjaman</h3>
+          <table id="tabelPinjam">
+            <thead>
+              <tr>
+                <th>Kode Pinjam</th>
+                <th>Tanggal Pinjam</th>
+                <th>Nama Anggota</th>
+                <th>Cover 1</th>
+                <th>Cover 2</th>
+                <th>Tanggal Kembali</th>
+                <th>Denda</th>
+                <th>Aksi</th>
+                <!-- TAMBAH INI -->
+              </tr>
+            </thead>
+            <tbody id="tbodyPinjam"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Tombol Aksi -->
+      <div class="actions">
+        <button id="simpan">Simpan</button>
+        <button id="bersihkan">Bersihkan</button>
+        <button id="keluar">Keluar</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

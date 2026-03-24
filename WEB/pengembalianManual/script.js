@@ -16,6 +16,8 @@ let daftarBuku = [
 let bukuDipilih = [];
 let peminjaman = [];
 
+const maxPilih = 2;
+
 // ================Objek===================
 const inputKodePinjam = document.getElementById("kodePinjam");
 const inputTanggalPinjam = document.getElementById("tanggalPinjam");
@@ -39,7 +41,7 @@ const tBodyTransaksi = document.getElementById("tBodyTransaksi");
 function pilihBuku() {
   const isbn = inputISBN.value.trim();
   const buku = daftarBuku.find((b) => b.isbn == inputISBN.value.trim());
-  const maxBuku = parseInt(inputJumlahPinjam.value);
+  const jumlahPilih = parseInt(inputJumlahPinjam.value);
 
   if (!isbn) {
     alert("ISBN tidak boleh kosong");
@@ -49,11 +51,20 @@ function pilihBuku() {
     alert("Buku tidak ditemukan");
     return;
   }
-  if (!maxBuku) {
+  if (!jumlahPilih) {
     alert("Masukkan Jumlah Buku yang dipilih");
     return;
   }
-  if (maxBuku) console.log("pilih buku");
+  if (jumlahPilih > maxPilih) {
+    alert("Jumlah buku lebih besar dari pada maksimal pinjam");
+    return;
+  }
+  if (jumlahPilih <= 0) {
+    alert("Jumlah buku tidak valid");
+    return;
+  }
+
+  
 }
 
 function resetFormBuku() {

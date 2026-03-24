@@ -11,51 +11,63 @@ class Buku {
 
 // ==================== DATA ====================
 let daftarBuku = [
-  new Buku("9786231809223", "PKK Kelas 12", "Stone", "2006", "covers/pkk.jpg"),
-  new Buku("9786022446576", "PPKN", "PEAK", "2007", "covers/pkn.jpg"),
+  new Buku(
+    "9786231809223",
+    "PKK Kelas 12",
+    "Stone",
+    "2006",
+    "../covers/pkk.jpg"
+  ),
+  new Buku("9786022446576", "PPKN", "PEAK", "2007", "../covers/pkn.jpg"),
   new Buku(
     "6941798464992",
     "Buku Catatan",
     "Elitis",
     "2008",
-    "covers/buku_Catatan.jpg"
+    "../covers/buku_Catatan.jpg"
   ),
   new Buku(
     "208386213",
     "Buku Tulis Samuel",
     "Elitis",
     "2008",
-    "covers/buku_tulis.jpg"
+    "../covers/buku_tulis.jpg"
   ),
-  new Buku("9786029053265", "MPR", "Elitis", "2008", "covers/mpr.jpg"),
+  new Buku("9786029053265", "MPR", "Elitis", "2008", "../covers/mpr.jpg"),
   new Buku(
     "9786025305740",
     "Filsafat Dalam Berbagai Perspektif",
     "Elitis",
     "2008",
-    "covers/filsafat.jpg"
+    "../covers/filsafat.jpg"
   ),
   new Buku(
     "9786232422971",
     "Realm Breaker",
     "Elitis",
     "2008",
-    "covers/realm_breaker.jpg"
+    "../covers/realm_breaker.jpg"
   ),
-  new Buku("6941256125632", "Wireless Rat", "Elitis", "2008", "covers/AM.jpg"),
+  new Buku(
+    "6941256125632",
+    "Wireless Rat",
+    "Elitis",
+    "2008",
+    "../covers/AM.jpg"
+  ),
   new Buku(
     "8991389260036",
     "MISS YOU KING",
     "Elitis",
     "2008",
-    "covers/metamorphosis.jpg"
+    "../covers/metamorphosis.jpg"
   ),
   new Buku(
     "119480002479",
     "RAJIN PANDAI",
     "Elitis",
     "2008",
-    "covers/death_note.jpg"
+    "../covers/death_note.jpg"
   ),
 ];
 
@@ -120,13 +132,13 @@ function renderTabelBukuDipilih() {
   let html = "";
   bukuDipilih.forEach((buku, index) => {
     html += `<tr>
-        <td>${buku.isbn}</td>
-        <td>${buku.judul}</td>
-        <td>${buku.penerbit}</td>
-        <td>${buku.tahun}</td>
-        <td><img class="cover-table" src="${buku.cover}" alt="cover" onerror="this.src='covers/no-image.jpg'"></td>
-        <td><button class="hapus-buku" data-index="${index}">Hapus</button></td>
-      </tr>`;
+          <td>${buku.isbn}</td>
+          <td>${buku.judul}</td>
+          <td>${buku.penerbit}</td>
+          <td>${buku.tahun}</td>
+          <td><img class="cover-table" src="${buku.cover}" alt="cover" onerror="this.src='covers/no-image.jpg'"></td>
+          <td><button class="hapus-buku" data-index="${index}">Hapus</button></td>
+        </tr>`;
   });
   tbodyBukuDipilih.innerHTML = html;
 
@@ -145,23 +157,23 @@ function renderTabelPinjam() {
     const buku2 = daftarBuku.find((b) => b.isbn === p.isbn2);
 
     html += `<tr>
-        <td>${p.kode}</td>
-        <td>${p.tglPinjam}</td>
-        <td>${p.nama}</td>
-        <td><img class="cover-table" src="${
-          buku1 ? buku1.cover : "covers/no-image.jpg"
-        }" alt="cover"></td>
-        <td><img class="cover-table" src="${
-          buku2 ? buku2.cover : "covers/no-image.jpg"
-        }" alt="cover"></td>
-        <td>${p.tglKembali}</td>
-        <td>Rp ${p.denda.toLocaleString("id-ID")}</td>
-        <td>
-          <button class="hapus-transaksi" data-index="${index}">
-            Hapus
-          </button>
-        </td>
-      </tr>`;
+          <td>${p.kode}</td>
+          <td>${p.tglPinjam}</td>
+          <td>${p.nama}</td>
+          <td><img class="cover-table" src="${
+            buku1 ? buku1.cover : "../covers/no-image.jpg"
+          }" alt="cover"></td>
+          <td><img class="cover-table" src="${
+            buku2 ? buku2.cover : "../covers/no-image.jpg"
+          }" alt="cover"></td>
+          <td>${p.tglKembali}</td>
+          <td>Rp ${p.denda.toLocaleString("id-ID")}</td>
+          <td>
+            <button class="hapus-transaksi" data-index="${index}">
+              Hapus
+            </button>
+          </td>
+        </tr>`;
   });
 
   tbodyPinjam.innerHTML = html;
@@ -185,7 +197,7 @@ function resetFormBuku() {
   judulInput.value = "";
   penerbitInput.value = "";
   tahunInput.value = "";
-  coverImage.src = "covers/no-image.jpg";
+  coverImage.src = "../covers/no-image.jpg";
 }
 
 function resetSemuaForm() {
@@ -215,11 +227,6 @@ function validateJumlahBuku() {
 }
 
 // ==================== EVENT ====================
-jumlahBukuInput.addEventListener("input", function () {
-  let val = parseInt(this.value);
-  if (isNaN(val) || val < 1) this.value = 1;
-  if (val > 2) this.value = 2;
-});
 
 isbnInput.addEventListener("input", function () {
   const buku = daftarBuku.find((b) => b.isbn === this.value.trim());
@@ -229,9 +236,14 @@ isbnInput.addEventListener("input", function () {
     tahunInput.value = buku.tahun;
     coverImage.src = buku.cover;
     coverImage.onerror = function () {
-      this.src = "covers/no-image.jpg";
+      this.src = "../covers/no-image.jpg";
     };
-  } else resetFormBuku();
+  } else {
+    judulInput.value = "Tidak ditemukan";
+    penerbitInput.value = "";
+    tahunInput.value = "";
+    coverImage.src = "../covers/no-image.jpg";
+  }
 });
 
 tambahBukuBtn.addEventListener("click", function () {
@@ -241,6 +253,8 @@ tambahBukuBtn.addEventListener("click", function () {
   if (!buku) return alert("Buku dengan ISBN tidak ditemukan!");
   const maxBuku = parseInt(jumlahBukuInput.value);
   if (bukuDipilih.length >= maxBuku) return alert(`Maksimal ${maxBuku} buku!`);
+  if (maxBuku > 2) return alert("Maksimal buku 2");
+  if (maxBuku <= 0) return alert("Jumlah buku tidak valid");
   if (bukuDipilih.some((b) => b.isbn === isbn))
     return alert("Buku sudah ditambahkan!");
   bukuDipilih.push(buku);
